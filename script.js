@@ -40,9 +40,18 @@ header.append(message); // Append it at the end
 // header.before(message); // Append it to the start
 // header.after(message); // Append it at the end
 
-console.log(message);
 document
   .querySelector('.btn--close-cookie')
   .addEventListener('click', function () {
     message.remove();
   });
+
+//Styles
+message.style.backgroundColor = '#37383d';
+message.style.width = '120%';
+
+// We can only access inline styles, to access other styles use getComputedStyles method
+console.log(getComputedStyle(message).height);
+
+message.style.height =
+  Number.parseFloat(getComputedStyle(message).height, 10) + 20 + 'px';
