@@ -7,6 +7,8 @@ const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -29,36 +31,8 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-const header = document.querySelector('.header');
-const message = document.createElement('div');
-message.classList.add('cookie-message');
-message.innerHTML = `We use cookies for improved functionality and analytics. <button class="btn btn--close-cookie">Got it</button>`;
-// header.prepend(message); // Append it to the start
-// header.append(message.cloneNode(true));
-header.append(message); // Append it at the end
-
-// header.before(message); // Append it to the start
-// header.after(message); // Append it at the end
-
-document
-  .querySelector('.btn--close-cookie')
-  .addEventListener('click', function () {
-    message.remove();
-  });
-
-//Styles
-message.style.backgroundColor = '#37383d';
-message.style.width = '120%';
-
-// We can only access inline styles, to access other styles use getComputedStyles method
-console.log(getComputedStyle(message).height);
-
-message.style.height =
-  Number.parseFloat(getComputedStyle(message).height, 10) + 20 + 'px';
-
-const btnScrollTo = document.querySelector('.btn--scroll-to');
-
-const section1 = document.querySelector('#section--1');
+////////////////////////////////////////////////////
+///Page Scrolling
 
 btnScrollTo.addEventListener('click', function (e) {
   const s1coords = section1.getBoundingClientRect();
@@ -91,34 +65,84 @@ btnScrollTo.addEventListener('click', function (e) {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
-//Creating a function to generate random integers
-const randomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1) + min);
+////////////////////////////////////////////////////
+///Page Navigation
 
-// Generate random colors using rgb function which calls randomInt to generate values between 0 - 255
-const randomColor = () =>
-  `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
+// document.querySelectorAll('.nav__link').forEach(el => {
+//   el.addEventListener('click', function (e) {
+//     e.preventDefault();
+//     const id = this.getAttribute('href');
+//     document.querySelector(id).scrollIntoView({
+//       behavior: 'smooth',
+//     });
+//   });
+// });
 
-// Add the event listener to nav link
-document.querySelector('.nav__link').addEventListener('click', function (e) {
-  this.style.backgroundColor = randomColor();
-  console.log('LINK', e.target, e.currentTarget);
-  console.log(e.currentTarget == this);
+// Event Delegation
+// 1. Add event listener to common parent element
+// 2. Determine what element  originated the event
 
-  //Stop event propagation
-  // e.stopPropagation();
-});
-// Add the event listener to nav links (ul element)
 document.querySelector('.nav__links').addEventListener('click', function (e) {
-  this.style.backgroundColor = randomColor();
-  console.log('CONTAINER', e.target, e.currentTarget);
+  e.preventDefault();
+  //Match only the elements you are interested in
+  if (e.target.classList.contains('nav__link')) {
+    const id = e.target.getAttribute('href');
+    document.querySelector(id).scrollIntoView({
+      behavior: 'smooth',
+    });
+  }
 });
-// Add the event listener to nav (nav element)
-document.querySelector('.nav').addEventListener(
-  'click',
-  function (e) {
-    this.style.backgroundColor = randomColor();
-    console.log('NAV', e.target, e.currentTarget);
-  },
-  true
-); // Event Capturing is true, Event bubbling is set to false
+
+////////////////////////////////////////////////////
+///Selecting, Deleting and creating elements
+const header = document.querySelector('.header');
+const message = document.createElement('div');
+message.classList.add('cookie-message');
+message.innerHTML = `We use cookies for improved functionality and analytics. <button class="btn btn--close-cookie">Got it</button>`;
+// header.prepend(message); // Append it to the start
+// header.append(message.cloneNode(true));
+header.append(message); // Append it at the end
+
+// header.before(message); // Append it to the start
+// header.after(message); // Append it at the end
+
+document
+  .querySelector('.btn--close-cookie')
+  .addEventListener('click', function () {
+    message.remove();
+  });
+
+//Styles
+message.style.backgroundColor = '#37383d';
+message.style.width = '120%';
+
+// We can only access inline styles, to access other styles use getComputedStyles method
+// console.log(getComputedStyle(message).height);
+
+message.style.height =
+  Number.parseFloat(getComputedStyle(message).height, 10) + 20 + 'px';
+
+////DOM traversing
+const h1 = document.querySelector('h1');
+// Going downwards: child elements
+console.log(h1.querySelectorAll('.highlight'));
+console.log(h1.childNodes);
+console.log(h1.children);
+h1.firstElementChild.style.color = 'white';
+h1.lastElementChild.style.color = 'orangered';
+
+//Going upwards: parents
+console.log(h1.parentNode);
+console.log(h1.parentElement);
+
+h1.closest('.header').style.background = 'var(--gradient-secondary)';
+h1.closest('h1').style.background = 'var(--gradient-primary)';
+
+//Going sideways: siblings
+console.log(h1.previousElementSibling);
+console.log(h1.nextElementSibling);
+console.log(h1.parentElement.children);
+
+[...h1.parentElement.children].forEach(function (el) {
+  if (el !== h1) el.style.transform = 'scale(0.5)';
+});
