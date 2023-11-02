@@ -94,6 +94,30 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
 });
 
 ////////////////////////////////////////////////////
+///Tabbed component
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab');
+
+  //Guard clause
+  if (!clicked) return;
+  // Remove the active class on all elements
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  // Add the active class again on clicked element
+  clicked.classList.add('operations__tab--active');
+
+  //Remove the active class on tab content
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
+  //Activate content area
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
+////////////////////////////////////////////////////
 ///Selecting, Deleting and creating elements
 const header = document.querySelector('.header');
 const message = document.createElement('div');
@@ -121,28 +145,3 @@ message.style.width = '120%';
 
 message.style.height =
   Number.parseFloat(getComputedStyle(message).height, 10) + 20 + 'px';
-
-////DOM traversing
-const h1 = document.querySelector('h1');
-// Going downwards: child elements
-console.log(h1.querySelectorAll('.highlight'));
-console.log(h1.childNodes);
-console.log(h1.children);
-h1.firstElementChild.style.color = 'white';
-h1.lastElementChild.style.color = 'orangered';
-
-//Going upwards: parents
-console.log(h1.parentNode);
-console.log(h1.parentElement);
-
-h1.closest('.header').style.background = 'var(--gradient-secondary)';
-h1.closest('h1').style.background = 'var(--gradient-primary)';
-
-//Going sideways: siblings
-console.log(h1.previousElementSibling);
-console.log(h1.nextElementSibling);
-console.log(h1.parentElement.children);
-
-[...h1.parentElement.children].forEach(function (el) {
-  if (el !== h1) el.style.transform = 'scale(0.5)';
-});
