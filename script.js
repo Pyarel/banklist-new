@@ -1,14 +1,15 @@
 'use strict';
 
-///////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 // Modal window
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
-const btnScrollTo = document.querySelector('.btn--scroll-to');
-const section1 = document.querySelector('#section--1');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -31,9 +32,14 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 ///Page Scrolling
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 
+const section1 = document.querySelector('#section--1');
+const btnScrollTo = document.querySelector('.btn--scroll-to');
 btnScrollTo.addEventListener('click', function (e) {
   const s1coords = section1.getBoundingClientRect();
   console.log(s1coords);
@@ -65,8 +71,11 @@ btnScrollTo.addEventListener('click', function (e) {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 ///Page Navigation
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 
 // document.querySelectorAll('.nav__link').forEach(el => {
 //   el.addEventListener('click', function (e) {
@@ -92,9 +101,12 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
     });
   }
 });
-
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 ///Tabbed component
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
@@ -117,8 +129,12 @@ tabsContainer.addEventListener('click', function (e) {
     .classList.add('operations__content--active');
 });
 
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 ///Selecting, Deleting and creating elements
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
 const header = document.querySelector('.header');
 const message = document.createElement('div');
 message.classList.add('cookie-message');
@@ -145,3 +161,81 @@ message.style.width = '120%';
 
 message.style.height =
   Number.parseFloat(getComputedStyle(message).height, 10) + 20 + 'px';
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//Menu fade animation
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
+const handleHover = function (e) {
+  if (e.target.classList.contains('nav__link')) {
+    const link = e.target;
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+    siblings.forEach(el => {
+      if (el !== link) el.style.opacity = this;
+    });
+  }
+};
+const nav = document.querySelector('.nav');
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//Sticky navigation
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
+/**
+ * This is not efficient as the scroll event is fired very frequently each time we scroll
+ */
+
+// const initialCoords = section1.getBoundingClientRect();
+// console.log('initialCoords: ', initialCoords);
+// console.log('scrollY: ', window.scrollY);
+// window.addEventListener('scroll', function (e) {
+//   console.log('initialCoords: ', initialCoords);
+//   console.log('scrollY: ', window.scrollY);
+//   if (window.scrollY > initialCoords.top) nav.classList.add('sticky');
+//   else nav.classList.remove('sticky');
+// });
+
+/**
+ * Sticky navigation: Intersection observer API
+ */
+
+// const obsCallback = function (entries, observer) {
+//   entries.forEach(entry => {
+//     console.log(entry);
+//   });
+// };
+
+// /**
+//  * When the target is intersecting viewport at 10%, callback function is called
+//  */
+// const obsOptions = {
+//   root: null,
+//   threshold: [0, 0.2], // observe for when element is 10% visible and element is completely out of the viewport
+// };
+
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+// observer.observe(section1);
+
+const navHeight = nav.getBoundingClientRect().height;
+console.log(navHeight);
+
+const stickyNav = function (entries) {
+  const [entry] = entries;
+  console.log(entry);
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+//rootMargin - display the nav when the height between top of the page and section1 is 90px i.e the height of navbar
+const headerObserver = new IntersectionObserver(stickyNav, {
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+
+headerObserver.observe(header);
