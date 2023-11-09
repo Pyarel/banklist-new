@@ -257,3 +257,78 @@ allSections.forEach(section => {
   sectionObserver.observe(section);
   section.classList.add('section--hidden');
 });
+
+/**
+ * Lazy Loading Images: Intersection observer API
+ */
+const imgTargets = document.querySelectorAll('img[data-src]');
+
+const loadImg = function (entries) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) return;
+
+  //Replace src with data-src
+  entry.target.src = entry.target.dataset.src;
+  //Once the image is loaded, it emits a event
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  });
+
+  imageObserver.unobserve(entry.target);
+};
+
+const imageObserver = new IntersectionObserver(loadImg, {
+  threshold: 0,
+  rootMargin: '200px',
+});
+
+imgTargets.forEach(img => imageObserver.observe(img));
+
+/**
+ * Building a slider Component
+ */
+const slides = document.querySelectorAll('.slide');
+
+// const slider = document.querySelector('.slider');
+// slider.style.transform = 'scale(0.5) translate(-800px)';
+// slider.style.overflow = 'visible';
+
+const goToSlide = function (slide) {
+  slides.forEach(
+    (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+  );
+};
+// slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`));
+goToSlide(0);
+
+//Next slide
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+
+let curSlide = 0;
+const maxSlides = slides.length;
+
+const nextSlide = function () {
+  if (curSlide === maxSlides - 1) {
+    curSlide = 0;
+  } else {
+    curSlide++;
+  }
+  goToSlide(curSlide);
+};
+
+const prevSlide = function () {
+  if (curSlide === 0) {
+    curSlide = maxSlides - 1;
+  } else curSlide--;
+  goToSlide(curSlide);
+};
+
+btnRight.addEventListener('click', nextSlide);
+btnLeft.addEventListener('click', prevSlide);
+
+document.addEventListener('keydown', function (e) {
+  if (e.key == 'ArrowLeft') prevSlide();
+  e.key == 'ArrowRight' && nextSlide();
+});
