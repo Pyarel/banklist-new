@@ -288,47 +288,100 @@ imgTargets.forEach(img => imageObserver.observe(img));
 /**
  * Building a slider Component
  */
-const slides = document.querySelectorAll('.slide');
+const slider = function () {
+  const slides = document.querySelectorAll('.slide');
+  const dotContainer = document.querySelector('.dots');
+  // const slider = document.querySelector('.slider');
+  // slider.style.transform = 'scale(0.5) translate(-800px)';
+  // slider.style.overflow = 'visible';
 
-// const slider = document.querySelector('.slider');
-// slider.style.transform = 'scale(0.5) translate(-800px)';
-// slider.style.overflow = 'visible';
+  const createDots = function () {
+    slides.forEach(function (_, i) {
+      dotContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      );
+    });
+  };
 
-const goToSlide = function (slide) {
-  slides.forEach(
-    (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
-  );
+  const activateDots = function (slide) {
+    document
+      .querySelectorAll('.dots__dot')
+      .forEach(dot => dot.classList.remove('dots__dot--active'));
+    document
+      .querySelector(`.dots__dot[data-slide = "${slide}"]`)
+      .classList.add('dots__dot--active');
+  };
+
+  const goToSlide = function (slide) {
+    slides.forEach(
+      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+    );
+  };
+  // slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`));
+
+  //Next slide
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+
+  let curSlide = 0;
+  const maxSlides = slides.length;
+
+  const nextSlide = function () {
+    if (curSlide === maxSlides - 1) {
+      curSlide = 0;
+    } else {
+      curSlide++;
+    }
+    goToSlide(curSlide);
+    activateDots(curSlide);
+  };
+
+  const prevSlide = function () {
+    if (curSlide === 0) {
+      curSlide = maxSlides - 1;
+    } else curSlide--;
+    goToSlide(curSlide);
+    activateDots(curSlide);
+  };
+
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key == 'ArrowLeft') prevSlide();
+    e.key == 'ArrowRight' && nextSlide();
+  });
+
+  dotContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const { slide } = e.target.dataset;
+      goToSlide(slide);
+      activateDots(slide);
+    }
+  });
+
+  const init = function () {
+    goToSlide(0);
+    createDots();
+    activateDots(0);
+  };
+  init();
 };
-// slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`));
-goToSlide(0);
+slider();
+// HTML is completely parsed, DOM tree is generated. All scripts must be downloaded and executed
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('HTML parsed and DOM tree built');
+});
 
-//Next slide
-const btnLeft = document.querySelector('.slider__btn--left');
-const btnRight = document.querySelector('.slider__btn--right');
+//All images and external files and CSS is loaded
+window.addEventListener('load', function (e) {
+  console.log('Page Fully loaded', e);
+});
 
-let curSlide = 0;
-const maxSlides = slides.length;
-
-const nextSlide = function () {
-  if (curSlide === maxSlides - 1) {
-    curSlide = 0;
-  } else {
-    curSlide++;
-  }
-  goToSlide(curSlide);
-};
-
-const prevSlide = function () {
-  if (curSlide === 0) {
-    curSlide = maxSlides - 1;
-  } else curSlide--;
-  goToSlide(curSlide);
-};
-
-btnRight.addEventListener('click', nextSlide);
-btnLeft.addEventListener('click', prevSlide);
-
-document.addEventListener('keydown', function (e) {
-  if (e.key == 'ArrowLeft') prevSlide();
-  e.key == 'ArrowRight' && nextSlide();
+//Display a message or do something before user closes the page
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  console.log(e);
+  e.returnValue = '';
 });
